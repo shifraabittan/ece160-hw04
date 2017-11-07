@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef enum {
   NAME_ONLY = 0,
@@ -12,29 +13,25 @@ typedef struct {
   char *first_name;
   char *last_name;
   char *major_field;
-  int  year; 
-  // TODO: add fields here for major and year
+  int year; 
 } Student;
 
 void print_student(Mode m, Student s) {
   switch (m) {
     int calculated_years;
 	case NAME_ONLY:
-      printf("%s %s\n", s.first_name, s.last_name);
-      break;
+		printf("%s %s\n", s.first_name, s.last_name);
+		break;
 	case MAJOR_AND_NAME:
-	    printf("%s %s %s\n", s.major_field, s.first_name, s.last_name);
-	    break;
+	    	printf("%s %s %s\n", s.major_field, s.first_name, s.last_name);
+	    	break;
 	 case YEAR_AND_NAME:
-	    printf("%d %s %s\n", s.year, s.first_name, s.last_name);
-	    break;
+	    	printf("%d %s %s\n", s.year, s.first_name, s.last_name);
+	    	break;
 	 case YEARS_LEFT_AND_NAME:
 		calculated_years = s.year - 2017;
 		printf("%d %s %s\n", calculated_years, s.first_name, s.last_name);
-		break;
-		
-		
-	
+		break;	
   }
 }
 
@@ -47,6 +44,7 @@ void print_student(Mode m, Student s) {
 int main(int argc, char* argv[]) {
 	//identify name of file, assign file text to a pointer
 	char *filename = argv[1];
+	//printf("the file name is %s", argv[1]);
 	FILE *fp;
 	fp = fopen(filename, "r");
 	
@@ -69,32 +67,43 @@ int main(int argc, char* argv[]) {
 	while ((s = fgets(buffer, 255, fp)) != NULL) {
 		
 		Student s1;
-		s1.first_name = buffer[0];
-		s1.last_name = s[1];
-		s1.major_field = s[2];
-		s1.year = atof(s[3]);
+		
+		size_t len = strlen(buffer);
+		size_t len_bytes = (len + 1) * sizeof(char);
+		
+		s1.first_name = malloc(len_bytes);
+		s1.last_name = malloc(len_bytes);
+		s1.major_field = malloc(len_bytes);
+		
+		sscanf(buffer, "%s %s %s %d", s1.first_name, s1.last_name, s1.major_field, &s1.year);
 		
 		all_students[i] = s1;
-		//sscanf (s from strings, f from files)
-		//call the function and print it back out
+		i++;
 	}
+	
+	fclose(fp);
+	
+	
+	while(1) {
+		int input_index = 0;
+		int input_mode = 0;
+		fscanf(stdin, "%d %d", &input_index, &input_mode);
+		print_student(input_mode, all_students[input_index]);
+	}
+	
+	for (int a = 0; a < i; a++) {
+		if (all_students[a].first_name != NULL){
+			free(all_students[a].first_name);
+		}	
+		if (all_students[a].last_name != NULL){
+			free(all_students[a].last_name);
+		}
+		if (all_students[a].major_field != NULL){
+			free(all_students[a].major_field);
+		}
+	}
+	
+	return 0;
   
-  for (int i = 2; i < argc; i = i+4){
-  int mode_value;
-  mode_value = atof(argv[1]);
-
-  Student s1;
-  s1.first_name = argv[i];
-  s1.last_name = argv[i+1];
-  s1.major_field = argv[i+2];
-  
-  s1.year = atof(argv[i+3]);
-  
-  print_student(mode_value, s1);
-  }
-  return 0;
-  
-  // TODO: parse argv to populate student structs 
-  // for now, here's two hardcoded students:
 
 }
